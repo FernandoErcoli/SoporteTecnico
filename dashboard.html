@@ -629,6 +629,18 @@ async function updateTrabajo(){
     });
     closeModal('modal-trabajo');
     toast(`✅ Listo · Saldo ${fmtPeso(saldo)} registrado en Caja`);
+
+  // 🔄 REVERTIR: Si vuelve de Listo a Pendiente/Taller → eliminar el ingreso de caja
+  } else if(estadoAnterior==='Listo' && nuevoEstado!=='Listo'){
+    const todaCaja=await dbGetAll('caja');
+    const movAEliminar=todaCaja.filter(c=>c.auto && c.trabajoId===editTrabajoId && c.categoria==='Trabajo');
+    for(const mov of movAEliminar) await dbDelete('caja',mov.id);
+    closeModal('modal-trabajo');
+    const msg=movAEliminar.length>0
+      ? `🔄 Revertido · Ingreso de ${fmtPeso(movAEliminar.reduce((a,b)=>a+b.monto,0))} eliminado de Caja`
+      : '🔄 Trabajo revertido a '+nuevoEstado;
+    toast(msg);
+
   } else {
     closeModal('modal-trabajo');
     toast('✅ Trabajo actualizado');
