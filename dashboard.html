@@ -2,8 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>System Solutions | Gestión Pro</title>
+<!-- PWA META -->
+<meta name="application-name" content="SS Gestión">
+<meta name="description" content="Sistema de gestión para System Solutions">
+<meta name="theme-color" content="#03050a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SS Gestión">
+<link rel="manifest" id="pwa-manifest">
+<link rel="apple-touch-icon" href="https://fernandoercoli.github.io/SoporteTecnico/favicon.png">
 <link rel="icon" type="image/png" href="https://fernandoercoli.github.io/SoporteTecnico/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
@@ -152,7 +162,14 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <span class="nav-label">PRESUPUESTOS</span>
     </div>
   </div>
-  <div class="sidebar-footer">v2.1 &middot; IndexedDB</div>
+  <div class="sidebar-footer">
+    <div style="margin-bottom:8px">v2.1 · IndexedDB</div>
+    <button onclick="exportarDatos()" style="background:var(--primary);color:#000;border:none;padding:8px 0;border-radius:6px;font-family:inherit;font-size:10px;font-weight:800;letter-spacing:1px;cursor:pointer;width:100%;margin-bottom:6px">📤 EXPORTAR</button>
+    <label style="background:var(--green-dim);color:var(--green);border:1px solid rgba(37,211,102,0.3);padding:8px 0;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:1px;cursor:pointer;width:100%;display:block;text-align:center">
+      📥 IMPORTAR
+      <input type="file" accept=".json" onchange="importarDatos(event)" style="display:none">
+    </label>
+  </div>
 </nav>
 
 <div id="main">
@@ -709,6 +726,125 @@ async function updatePresupuesto(){if(!editPresupuestoId)return;const item=await
 async function delPresupuesto(id){if(!confirm('¿Eliminar?'))return;await dbDelete('presupuestos',id);toast('🗑️ Eliminado');renderPresupuestos()}
 
 initDB().then(()=>{document.getElementById('dbStatus').textContent='Base de datos local activa';renderTrabajos()}).catch(()=>{document.getElementById('dbStatus').textContent='Error de base de datos';document.querySelector('.db-dot').style.background='var(--red)'});
+
+// ── EXPORTAR ──
+async function exportarDatos(){
+  try {
+    const stores = ['trabajos','repuestos','caja','proveedores','presupuestos'];
+    const backup = { version: '2.1', fecha: new Date().toISOString(), datos: {} };
+    for(const s of stores) backup.datos[s] = await dbGetAll(s);
+    const total = Object.values(backup.datos).reduce((a,b)=>a+b.length,0);
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fecha = new Date().toISOString().split('T')[0];
+    a.href = url;
+    a.download = `SS-Gestion-backup-${fecha}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast(`✅ Exportado · ${total} registros guardados`);
+  } catch(e) {
+    toast('Error al exportar', true);
+  }
+}
+
+// ── IMPORTAR ──
+async function importarDatos(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  try {
+    const text = await file.text();
+    const backup = JSON.parse(text);
+    if(!backup.datos) { toast('Archivo inválido', true); return; }
+    const stores = ['trabajos','repuestos','caja','proveedores','presupuestos'];
+    let total = 0;
+    const confirmar = confirm(`¿Importar backup del ${backup.fecha ? backup.fecha.split('T')[0] : 'archivo'}?\n\nEsto AGREGA los datos al existente sin borrar nada.`);
+    if(!confirmar) return;
+    for(const s of stores){
+      if(!backup.datos[s]) continue;
+      for(const item of backup.datos[s]){
+        const {id, ...sinId} = item; // quitar el id para que no haya conflictos
+        await dbAdd(s, sinId);
+        total++;
+      }
+    }
+    toast(`✅ Importado · ${total} registros cargados`);
+    renderTrabajos();
+  } catch(e) {
+    toast('Error al importar: archivo corrupto', true);
+  }
+  event.target.value = ''; // reset input
+}
+
+// ── PWA: Manifest dinámico ──
+(function(){
+  const manifest = {
+    name: "SS Gestión Pro",
+    short_name: "SS Gestión",
+    description: "Sistema de gestión para System Solutions",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#03050a",
+    theme_color: "#03050a",
+    orientation: "portrait-primary",
+    icons: [
+      { src: "https://fernandoercoli.github.io/SoporteTecnico/favicon.png", sizes: "192x192", type: "image/png" },
+      { src: "https://fernandoercoli.github.io/SoporteTecnico/favicon.png", sizes: "512x512", type: "image/png" }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  document.getElementById('pwa-manifest').setAttribute('href', url);
+})();
+
+// ── PWA: Service Worker ──
+if('serviceWorker' in navigator){
+  const swCode = `
+    const CACHE = 'ss-gestion-v1';
+    const ASSETS = ['./', './index.html'];
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(()=>{}));
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e => {
+      if(e.request.method !== 'GET') return;
+      e.respondWith(
+        fetch(e.request).catch(() => caches.match(e.request))
+      );
+    });
+  `;
+  const swBlob = new Blob([swCode], {type:'text/javascript'});
+  const swUrl = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl).then(()=>{
+    console.log('SW registrado');
+  }).catch(()=>{});
+}
+
+// ── PWA: Botón instalar ──
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Mostrar botón en sidebar footer
+  const footer = document.querySelector('.sidebar-footer');
+  if(footer){
+    const btn = document.createElement('button');
+    btn.innerHTML = '📲 Instalar App';
+    btn.style.cssText = 'background:var(--primary);color:#000;border:none;padding:8px 12px;border-radius:6px;font-family:inherit;font-size:10px;font-weight:800;letter-spacing:1px;cursor:pointer;width:100%;margin-top:10px';
+    btn.onclick = async () => {
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const {outcome} = await deferredPrompt.userChoice;
+      if(outcome==='accepted') btn.remove();
+      deferredPrompt = null;
+    };
+    footer.appendChild(btn);
+  }
+});
 </script>
 </body>
 </html>
