@@ -947,7 +947,6 @@ function typeLine(){
 function typeText(el,text,cb){let i=0;const iv=setInterval(()=>{el.textContent+=text[i];i++;if(i>=text.length){clearInterval(iv);cb()}},40)}
 setTimeout(typeLine,1000);
 // ── CHATBOT ──
-const CLAUDE_API_KEY = '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';
 const SYSTEM_PROMPT = `Sos el asistente virtual de SystemSolutions, un servicio técnico informático premium ubicado en Buenos Aires (CABA y Gran Buenos Aires), Argentina.
 
 INFORMACIÓN DEL NEGOCIO:
@@ -1050,7 +1049,7 @@ async function sendChatMessage(){
     const res = await fetch('https://falling-bread-84d3.systemsolutions-helpdesk.workers.dev/',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:SYSTEM_PROMPT,messages:chatHistory})
+      body: JSON.stringify({model:'claude-haiku-4-5',max_tokens:300,system:SYSTEM_PROMPT,messages:chatHistory})
     });
     const data = await res.json();
     const reply = data.content?.[0]?.text || 'Lo siento, no pude procesar tu consulta. Contactanos por WhatsApp 📱';
