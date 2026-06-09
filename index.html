@@ -265,6 +265,41 @@ footer p{font-size:.68rem;color:var(--muted);letter-spacing:.5px}
   .nosotros-values{grid-template-columns:1fr}
   .nosotros-counter{grid-template-columns:1fr 1fr 1fr}
 }
+/* ── CHATBOT ── */
+.chat-bubble{position:fixed;bottom:100px;right:28px;z-index:8000;width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:none;box-shadow:0 0 20px rgba(124,109,250,0.3);transition:transform .2s,box-shadow .2s}
+.chat-bubble:hover{transform:scale(1.1);box-shadow:0 0 32px rgba(124,109,250,0.5)}
+.chat-bubble .chat-badge{position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--primary);border-radius:50%;border:2px solid var(--bg);animation:blink 2s ease infinite}
+.chat-window{position:fixed;bottom:168px;right:28px;z-index:8000;width:360px;max-width:calc(100vw - 40px);background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 0 60px rgba(124,109,250,0.12),0 40px 80px rgba(0,0,0,.7);display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(16px) scale(.97);transition:opacity .25s,transform .25s}
+.chat-window.chat-open{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+.chat-header{background:var(--surface2);padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.chat-avatar{width:34px;height:34px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}
+.chat-header-info{flex:1}
+.chat-header-name{font-size:.8rem;font-weight:700;color:var(--text);letter-spacing:.5px}
+.chat-header-status{font-size:.65rem;color:var(--primary);letter-spacing:1px}
+.chat-close-btn{background:none;border:none;color:var(--muted);font-size:1rem;cursor:none;line-height:1;transition:color .2s}
+.chat-close-btn:hover{color:var(--text)}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;max-height:340px;min-height:200px}
+.chat-messages::-webkit-scrollbar{width:4px}
+.chat-messages::-webkit-scrollbar-track{background:transparent}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.chat-msg{max-width:82%;padding:10px 14px;border-radius:8px;font-size:.78rem;line-height:1.6;animation:fadeUp .2s ease}
+.chat-msg.bot{background:var(--surface2);color:var(--text);border-bottom-left-radius:2px;align-self:flex-start;border:1px solid var(--border)}
+.chat-msg.user{background:var(--primary);color:#fff;border-bottom-right-radius:2px;align-self:flex-end}
+.chat-msg.typing{display:flex;gap:5px;align-items:center;padding:12px 16px}
+.chat-msg.typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:typingDot 1.2s ease infinite}
+.chat-msg.typing span:nth-child(2){animation-delay:.2s}
+.chat-msg.typing span:nth-child(3){animation-delay:.4s}
+@keyframes typingDot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.chat-footer{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end}
+.chat-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text);outline:none;resize:none;max-height:100px;transition:border-color .2s;line-height:1.5}
+.chat-input::placeholder{color:var(--muted)}
+.chat-input:focus{border-color:var(--primary)}
+.chat-send{width:36px;height:36px;border-radius:6px;background:var(--primary);border:none;color:#fff;font-size:1rem;cursor:none;display:flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .2s;flex-shrink:0}
+.chat-send:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,109,250,.4)}
+.chat-send:disabled{opacity:.4}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px}
+.chat-sug-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:5px 10px;border-radius:4px;cursor:none;transition:border-color .2s,color .2s;letter-spacing:.5px}
+.chat-sug-btn:hover{border-color:var(--primary);color:var(--primary)}
 /* ── MODAL CONSULTAR ── */
 .modal-overlay{position:fixed;inset:0;z-index:9000;background:rgba(3,5,10,.85);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
 .modal-overlay.modal-open{opacity:1;pointer-events:all}
@@ -763,9 +798,9 @@ footer p{font-size:.68rem;color:var(--muted);letter-spacing:.5px}
         <div class="c-icon">💬</div>
         <div><div class="c-label">WhatsApp</div><div class="c-val">+54 9 11 3027-9205</div></div>
       </a>
-      <a href="mailto:systemsolutions.helpdesk@gmail.com" class="c-item">
+      <a href="mailto:fernandoezequielercoli@gmail.com" class="c-item">
         <div class="c-icon">✉️</div>
-        <div><div class="c-label">Email</div><div class="c-val">systemsolutions.helpdesk@gmail.com</div></div>
+        <div><div class="c-label">Email</div><div class="c-val">fernandoezequielercoli@gmail.com</div></div>
       </a>
       <div class="c-item" style="cursor:default">
         <div class="c-icon">🕐</div>
@@ -792,6 +827,32 @@ footer p{font-size:.68rem;color:var(--muted);letter-spacing:.5px}
     </p>
   </div>
 </section>
+
+<!-- CHATBOT -->
+<button class="chat-bubble" id="chatBubble" onclick="toggleChat()" title="Chat con nosotros">
+  🤖<span class="chat-badge"></span>
+</button>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-avatar">SS</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">SystemSolutions Bot</div>
+      <div class="chat-header-status">● En línea ahora</div>
+    </div>
+    <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-suggestions" id="chatSuggestions">
+    <button class="chat-sug-btn" onclick="sendSuggestion('¿Cuáles son sus servicios?')">Servicios</button>
+    <button class="chat-sug-btn" onclick="sendSuggestion('¿Cuánto cuesta el diagnóstico?')">Precios</button>
+    <button class="chat-sug-btn" onclick="sendSuggestion('¿Hacen soporte a domicilio?')">Domicilio</button>
+    <button class="chat-sug-btn" onclick="sendSuggestion('¿Cómo los contacto?')">Contacto</button>
+  </div>
+  <div class="chat-footer">
+    <textarea class="chat-input" id="chatInput" placeholder="Escribí tu consulta..." rows="1" onkeydown="chatKeydown(event)" oninput="autoResize(this)"></textarea>
+    <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">➤</button>
+  </div>
+</div>
 
 <!-- MODAL CONSULTAR -->
 <div class="modal-overlay" id="consultarModal">
@@ -885,6 +946,139 @@ function typeLine(){
 }
 function typeText(el,text,cb){let i=0;const iv=setInterval(()=>{el.textContent+=text[i];i++;if(i>=text.length){clearInterval(iv);cb()}},40)}
 setTimeout(typeLine,1000);
+// ── CHATBOT ──
+const CLAUDE_API_KEY = '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';
+const SYSTEM_PROMPT = `Sos el asistente virtual de SystemSolutions, un servicio técnico informático premium ubicado en Buenos Aires (CABA y Gran Buenos Aires), Argentina.
+
+INFORMACIÓN DEL NEGOCIO:
+- Fundador: Fernando E., +15 años de experiencia en hardware, software y redes
+- Especialidades: recuperación de datos, armado de PCs gamer, soporte remoto
+- Clientes: hogares y PyMEs
+- Cobertura: CABA y Gran Buenos Aires
+- Garantía: 30 días en todos los trabajos
+- Respuesta: menos de una hora, reparación en el día en la mayoría de casos
+
+SERVICIOS:
+1. Diagnóstico Completo — GRATIS, sin cobros innecesarios
+2. Recuperación de Datos — discos dañados, archivos eliminados, formateos accidentales
+3. Eliminación de Virus — malware, ransomware, adware, limpieza profunda
+4. Optimización Total — PC lenta, limpieza interna, thermal paste, SSD, SO
+5. Software & Windows — instalación Windows, Office, drivers, antivirus
+6. Redes & Conectividad — Wi-Fi, redes locales, VPN, routers
+7. Armado de PCs Gamer — selección de componentes por presupuesto
+8. Soporte Remoto — sin salir de casa, configuraciones y optimización
+9. Mantenimiento Preventivo — para empresas y hogares
+10. Recuperación de contraseñas y cuentas
+
+VALORES:
+- Diagnóstico honesto: nunca inventamos problemas
+- Privacidad garantizada: no accedemos a archivos innecesarios
+- Trato humano y personalizado
+
+CONTACTO:
+- WhatsApp: +54 9 11 3027-9205
+- Email: systemsolutions_helpdesk@gmail.com
+- Web: systemsolutions.com.ar
+
+INSTRUCCIONES:
+- Respondé siempre en español, de forma amigable, breve y directa
+- Si te preguntan por precios específicos, decí que depende del diagnóstico y que el diagnóstico es GRATIS
+- Si el usuario quiere hacer una consulta formal, invitalo a usar el formulario de la web o el WhatsApp
+- No inventes información que no tenés
+- Máximo 3-4 oraciones por respuesta
+- Usá emojis con moderación`;
+
+let chatHistory = [];
+let chatInitialized = false;
+
+function toggleChat(){
+  const win = document.getElementById('chatWindow');
+  win.classList.toggle('chat-open');
+  if(win.classList.contains('chat-open') && !chatInitialized){
+    chatInitialized = true;
+    document.getElementById('chatBubble').querySelector('.chat-badge').style.display='none';
+    addBotMessage('¡Hola! 👋 Soy el asistente de **SystemSolutions**. ¿En qué te puedo ayudar hoy?');
+  }
+  if(win.classList.contains('chat-open')) setTimeout(()=>document.getElementById('chatInput').focus(),300);
+}
+
+function addBotMessage(text){
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot';
+  div.innerHTML = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMessage(text){
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg user';
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping(){
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping(){
+  const t = document.getElementById('typingIndicator');
+  if(t) t.remove();
+}
+
+async function sendChatMessage(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('chatSuggestions').style.display = 'none';
+  addUserMessage(text);
+  chatHistory.push({role:'user', content: text});
+  document.getElementById('chatSendBtn').disabled = true;
+  showTyping();
+  try {
+    const res = await fetch('https://falling-bread-84d3.systemsolutions-helpdesk.workers.dev/',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:SYSTEM_PROMPT,messages:chatHistory})
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Lo siento, no pude procesar tu consulta. Contactanos por WhatsApp 📱';
+    chatHistory.push({role:'assistant', content: reply});
+    removeTyping();
+    addBotMessage(reply);
+  } catch(e){
+    removeTyping();
+    addBotMessage('Hubo un problema de conexión. Contactanos directamente por WhatsApp: **+54 9 11 3027-9205** 📱');
+  }
+  document.getElementById('chatSendBtn').disabled = false;
+  document.getElementById('chatInput').focus();
+}
+
+function sendSuggestion(text){
+  document.getElementById('chatInput').value = text;
+  sendChatMessage();
+}
+
+function chatKeydown(e){
+  if(e.key==='Enter' && !e.shiftKey){e.preventDefault();sendChatMessage();}
+}
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,100)+'px';
+}
+
 const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')})},{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 document.getElementById('consultarModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('modal-open')});
