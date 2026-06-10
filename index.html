@@ -1007,6 +1007,22 @@ function addBotMessage(text){
   div.className = 'chat-msg bot';
   div.innerHTML = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
   msgs.appendChild(div);
+
+  // Mostrar botones de contacto si el bot menciona WhatsApp o contacto
+  const lower = text.toLowerCase();
+  if(lower.includes('whatsapp') || lower.includes('contacto') || lower.includes('escribinos') || lower.includes('comunicarte')){
+    const btns = document.createElement('div');
+    btns.style.cssText = 'display:flex;gap:8px;margin-top:6px;flex-wrap:wrap';
+    btns.innerHTML = `
+      <a href="https://wa.me/5491130279205" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#25d366;color:#fff;padding:8px 14px;border-radius:6px;font-size:.72rem;text-decoration:none;font-family:JetBrains Mono,monospace;letter-spacing:.5px">
+        💬 WhatsApp
+      </a>
+      <a href="mailto:fernandoezequielercoli@gmail.com" style="display:inline-flex;align-items:center;gap:6px;background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:.72rem;text-decoration:none;font-family:JetBrains Mono,monospace;letter-spacing:.5px">
+        ✉️ Email
+      </a>`;
+    msgs.appendChild(btns);
+  }
+
   msgs.scrollTop = msgs.scrollHeight;
 }
 
